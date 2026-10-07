@@ -14,19 +14,24 @@ sensitivity, PM overrides with reasons, localStorage persistence with safe
 loading, CSV export and a stakeholder summary. README.md documents setup, the
 formula, limitations and the three-minute demo. The demo was rehearsed end to
 end in the browser and every number matched. Build, lint (0 warnings) and 44
-tests pass. Nothing is committed yet.
+tests pass. Committed as 15dffee and pushed to
+https://github.com/JamesKevinJones/decidra (public) on 2026-10-07.
 
 ## In progress
 
-- [ ] Nothing. Waiting on Kevin: commit, and then optionally the deck's AI extension.
+- [ ] Nothing in progress.
 
 ## The exact next step
 
-1. Commit (no Claude co-author line). If it's ever pushed, run
-   `/security-review` on the diff first (global rule).
+1. Optional: `gh secret set CLAUDE_API_KEY --repo JamesKevinJones/decidra` so the
+   security-review workflow can run on PRs (Kevin sets this himself). Its
+   `claude-model: claude-opus-5` comes from the framework template and is
+   probably not a valid model ID. Fix it in `_agent-framework` first.
 2. Optional: deck Part 4 AI extension. Option A is parsing a messy list into
    suggested estimates; Option B is "Challenge my top 3". Either needs a mock
    adapter first and a server-side key; never put a key in the browser.
+3. Before any future push, run `/security-review`. It needs `origin/HEAD`, which
+   now exists.
 
 ## Open questions
 
