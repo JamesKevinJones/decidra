@@ -12,7 +12,10 @@ The tool recommends; the PM decides.
 - Language / runtime: TypeScript 6, Node 24
 - Framework: React 19, Vite 8 (create-vite react-ts template)
 - Styling: plain CSS in `src/index.css`, tokens on `:root`. No component library, no Tailwind.
-- Data: browser `localStorage`, key `decidra.features.v1`. No backend, no database.
+- Data: browser `localStorage`, key `decidra.features.v1`. No database.
+- AI (optional): "Challenge my top 3" calls Claude Opus 5.5 (`claude-opus-5-5`) via
+  `@anthropic-ai/sdk` from a Vite dev-server route in `server/`. Mock by default;
+  live only with `DECIDRA_AI=live` in `.env.local`.
 - Deploy: none. Runs on localhost only.
 
 ## Layout
@@ -26,15 +29,20 @@ src/
   decisions.ts      # assumptionFlags(), sensitivity(), applyOverrides(): pure, built on scoring.ts
   storage.ts        # localStorage load/save; validates saved data, backs up unreadable data
   report.ts         # CSV export (escaped, formula-safe) and the deterministic stakeholder summary
+  challenge.ts      # AI review: input builder, JSON schema, reply validation, mock. No network.
+  ChallengePanel.tsx # the "Challenge my top 3" section
   *.test.ts         # node:test, run by `npm test` (no test framework installed)
   index.css         # all styles and design tokens
+server/             # Node only, never bundled: Vite plugin, request handler, Claude call
 ```
 
 ## Rules
 
 1. All seven deck phases are done. For new work, keep the same habit: small steps, verify, then ask before the next.
 2. Scores, ranking, flags, sensitivity and the summary are deterministic code. Never an LLM.
-3. Don't add dependencies without asking. No auth, database, payments, cloud or paid AI APIs.
+   The only AI is the optional review, which advises and never writes back.
+3. Don't add dependencies without asking. No auth, database, payments or cloud. Paid AI calls
+   only through `server/claude.ts`, only on an explicit click, never from tests.
 4. Extend, don't rebuild. Run the checks in `docs/VERIFY.md` before reporting a phase done.
 5. A PM override never changes the calculated score or suggested rank.
 

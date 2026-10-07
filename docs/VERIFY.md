@@ -69,6 +69,22 @@ Phase 6 manual regression checks (no DOM test runner, so these are by hand):
 - At 375px wide (DevTools device mode) the page never scrolls sideways; only the
   table does. Add feature sits on its own row above Reset and Export.
 
+AI review ("Challenge my top 3"), mock mode, with no `.env.local`: click the
+button and three reviews appear, labelled "Mock review. No API call was made."
+Then edit the Planner's effort and the review dims with "Your top 3 changed".
+Endpoint guards, with the dev server running and BODY set to valid JSON:
+
+```bash
+curl -s -X POST -H "Content-Type: application/json" -H "Origin: https://evil.example" --data "$BODY" http://localhost:5173/api/challenge
+```
+
+That must return 403. A `text/plain` post returns 415, GET returns 405, and a
+body over 32 KB returns 413.
+
+Live mode needs `DECIDRA_AI=live` (plus a key or `ant auth login`) in
+`.env.local`, a dev-server restart, and costs about 5 to 8 cents per click. Never
+run it from tests; the tests use a fake Claude.
+
 ## Known-failing
 
 - None.

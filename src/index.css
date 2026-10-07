@@ -384,6 +384,75 @@ td.priority {
   max-width: 80ch;
 }
 
+/* Challenge my top 3 (optional AI review) */
+
+.challenge-section {
+  margin-top: 48px;
+}
+
+.challenge-section h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.challenge-result {
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  max-width: 80ch;
+}
+
+.challenge-result.is-stale .challenge-overall,
+.challenge-result.is-stale .challenge-list {
+  opacity: 0.55;
+}
+
+.challenge-overall {
+  font-weight: 500;
+}
+
+.challenge-list {
+  display: grid;
+  gap: 20px;
+  margin: 20px 0 0;
+  padding-left: 20px;
+}
+
+.challenge-list h3 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.challenge-list ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+}
+
+.challenge-label {
+  margin-top: 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.challenge-question {
+  margin-top: 4px;
+  font-size: 0.9375rem;
+}
+
+.challenge-meta {
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-3);
+  font-size: 0.8125rem;
+}
+
 /* Shared bits */
 
 .button-ghost,

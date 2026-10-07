@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { impactLabel, newId, sampleFeatures, type Feature } from './features'
 import { FeaturePanel } from './FeaturePanel'
+import { ChallengePanel } from './ChallengePanel'
 import { rankFeatures } from './scoring'
 import { applyOverrides, assumptionFlags, describeWhatIf, sensitivity } from './decisions'
 import { loadFeatures, saveFeatures } from './storage'
@@ -261,6 +262,8 @@ function App() {
             </p>
           )}
         </section>
+
+        <ChallengePanel decided={decided} flags={flags} />
 
         <section className="summary-section" aria-labelledby="summary-heading">
           <div className="summary-head">

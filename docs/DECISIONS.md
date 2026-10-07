@@ -5,6 +5,18 @@ true, add a new one that supersedes it and say so.
 
 ---
 
+## 2026-10-07 — The AI extension is "Challenge my top 3" on Opus 5.5, via a Vite dev-server route
+
+**Context.** Deck Part 4 offers two optional AI features and requires the key to stay server-side, a mock for demos, no automatic calls, and no live calls in tests. Decidra had no server.
+
+**Decision.** Kevin chose Option B (Challenge my top 3), Claude Opus 5.5, and a Vite plugin route (`server/challenge-api.ts`) over a separate Node server. It sends the top 3 by *final* priority (what the PM plans to build), with one call per click, structured outputs (JSON schema), `fallbacks: "default"` for refusals, and effort `medium` set explicitly. It's mock unless `DECIDRA_AI=live`. Replies for identical input are cached in memory. The route rejects foreign `Origin` headers and non-JSON bodies.
+
+**Why not the alternative.** A separate server adds a second process to start for a local-only app. Haiku would cost about a cent per review, but the job is judgment. Zod would have been a second new dependency; the raw JSON-schema form needs none. Without the origin check, any website could make the browser spend the user's credits through localhost.
+
+**Consequences.** The feature only works under `npm run dev` or `npm run preview`. `@anthropic-ai/sdk` is a devDependency, because it is never bundled. Option A can reuse the route, mock and validation pattern. The per-review cost shown on the page uses hard-coded Opus 5.5 prices.
+
+---
+
 ## 2026-10-07 — Unreadable saved data is backed up, never silently replaced
 
 **Context.** Phase 5 restores the backlog from localStorage. Saved data can be corrupted, hand-edited or from an older shape.

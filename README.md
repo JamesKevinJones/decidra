@@ -9,7 +9,9 @@ and shows how fragile each ranking is. Then the product manager makes the final
 call, with a recorded reason. **The tool recommends; the PM decides.**
 
 Every calculation is plain, deterministic code: same input, same output, no AI
-and no API calls. It runs entirely in your browser on your own machine.
+and no API calls. It runs on your own machine. One optional feature, "Challenge
+my top 3", asks Claude to argue against your plan. It's off by default and never
+changes a score or a priority.
 
 Built phase by phase from the Airtribe workshop deck *Build a RICE
 Prioritization Agent with Codex* (Anitha Kishorekumar), using its fictional
@@ -51,6 +53,9 @@ the features were added.
   reload.
 - **Exports:** CSV export (opens in Excel or Google Sheets) and a plain-text
   stakeholder summary.
+- **Challenge my top 3 (optional, Claude):** a devil's-advocate review of your
+  top three priorities: questionable assumptions, missing evidence, and one
+  question to answer before building each. See below.
 
 ## Getting started
 
@@ -87,6 +92,35 @@ Lint:
 npm run lint
 ```
 
+## Optional: Challenge my top 3 with Claude
+
+By default this runs in **mock mode**: rule-based text, no API calls, no cost.
+To get a real review from Claude Opus 5.5:
+
+1. Copy `.env.example` to `.env.local`. It's git-ignored.
+2. Set `ANTHROPIC_API_KEY` in it, or leave that empty and use an `ant auth login`
+   profile.
+3. Restart `npm run dev`. The section's description changes to show live mode.
+
+How it behaves:
+
+- **One call per click,** never on page load, typing or re-ranking. Each review
+  costs roughly 5 to 8 US cents, and the page shows the real token count and an
+  estimate afterwards. Re-running with an unchanged top 3 reuses the last reply
+  for free until the dev server restarts.
+- **The key stays server-side.** The call is made by a small route on the Vite dev
+  server (`POST /api/challenge`, in `server/`), not by the browser. The route
+  refuses requests from other websites, so a page you visit can't spend your
+  credits.
+- **What is sent to Anthropic:** the top three features' names, descriptions,
+  estimates, scores, evidence and dependency notes, flags and override reasons.
+  Nothing else from the backlog.
+- **Advice only.** Replies are checked against a fixed schema and must cover
+  exactly the features that were sent. They never change a score, rank or
+  priority.
+- **Development servers only.** It works under `npm run dev` and `npm run preview`.
+  A static build has no server, so the button reports an error there.
+
 ## Resetting the demo
 
 Click **Reset demo data** above the backlog and confirm. This replaces the whole
@@ -107,9 +141,15 @@ src/
   decisions.ts     assumption flags, sensitivity analysis, PM overrides
   storage.ts       saving to and loading from localStorage, with validation
   report.ts        CSV export and the stakeholder summary
+  challenge.ts     "Challenge my top 3": input, schema, reply validation, mock
+  ChallengePanel.tsx the review section on the page
   App.tsx          the page and backlog table
   FeaturePanel.tsx the add/edit side panel
   *.test.ts        tests for every module above
+server/
+  challenge-api.ts     Vite plugin adding POST /api/challenge
+  challenge-handler.ts origin and JSON checks, validation, mock mode, cache
+  claude.ts            the only code that calls Claude (Opus 5.5)
 ```
 
 ## Known limitations
@@ -125,15 +165,17 @@ src/
 - **Sensitivity covers confidence only,** not reach, impact or effort.
 - **Not secure storage.** localStorage is fine for a local prototype. Never put
   passwords or API keys in it.
+- **The Claude review has never been run live by its author.** It's covered by
+  unit tests against a fake Claude and checked end to end in mock mode, but the
+  first real API call will be yours.
 - **One manual regression check.** The panel's drag-to-backdrop fix has no
   automated test, because there's no browser test runner. See `docs/VERIFY.md`.
 
 ## Possible future enhancements
 
-- AI-assisted parsing of a messy feature list into suggested estimates, behind a
-  mock adapter, with the API key kept on a server and every suggestion reviewed
-  by the PM (deck Option A).
-- A "Challenge my top 3" devil's-advocate review (deck Option B).
+- AI-assisted parsing of a messy feature list into suggested estimates, reviewed
+  by the PM before saving (deck Option A). The server route, mock pattern and
+  schema validation from "Challenge my top 3" are ready to reuse.
 - CSV import, multiple named backlogs, and sensitivity for the other inputs.
 - Shared storage, so a team can work on the same backlog.
 

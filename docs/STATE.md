@@ -7,39 +7,38 @@
 
 ## Where things stand
 
-All seven deck phases are done. Decidra runs at http://localhost:5173
-(`npm run dev`). It covers backlog editing with validation, live RICE scoring
-and ranking, assumption flags, confidence sensitivity, PM overrides with
-reasons, localStorage persistence with safe loading, CSV export and a
-stakeholder summary. README.md documents setup, the formula, limitations and
-the three-minute demo. The demo was rehearsed end to end in the browser and
-every number matched. Build, lint (0 warnings) and 44 tests pass.
+All seven deck phases are done, plus the deck's optional AI extension, Option B:
+"Challenge my top 3", a devil's-advocate review by Claude Opus 5.5. Decidra runs
+at http://localhost:5173 (`npm run dev`). Build, lint (0 warnings) and 59 tests
+pass. Public at https://github.com/JamesKevinJones/decidra.
 
-Public at https://github.com/JamesKevinJones/decidra. `main` is at `e5d566e`
-(3 commits), in sync with `origin/main`. The security-review workflow pins
-`claude-opus-5-5`, synced from the `_agent-framework` template, which was
-rolled out to the other projects the same day.
+The AI review is mock by default. Live mode is `DECIDRA_AI=live` plus a key in
+`.env.local` (see `.env.example`). **It has never made a real API call:** there
+are no Anthropic credentials on this machine. Mock mode, the endpoint guards
+(403, 415, 405, 413) and the UI were verified in the browser, and the live path
+is unit-tested against a fake Claude. The AI extension is committed locally but
+not pushed.
 
 ## In progress
 
-- [ ] Nothing in progress.
+- [ ] AI extension committed and verified in mock mode, waiting for Kevin's first live run, then a push.
 
 ## The exact next step
 
-Nothing is required. Options, in order of value:
-
-1. `gh secret set CLAUDE_API_KEY --repo JamesKevinJones/decidra`, so the
-   security-review workflow runs on PRs. Kevin sets this himself, never through
-   an agent. It only runs on `pull_request`, so direct pushes to `main` are
-   covered by the local `/security-review` and nothing else.
-2. Deck Part 4 AI extension. Option A is parsing a messy list into suggested
-   estimates; Option B is "Challenge my top 3". Either needs a mock adapter first
-   and a server-side key; never put a key in the browser.
+1. Kevin: copy `.env.example` to `.env.local`, add a key, restart `npm run dev`,
+   and click "Challenge my top 3" once (about 5 to 8 cents). Check that the reply
+   names the right features, that the footer shows `claude-opus-5-5` with token
+   counts, and that a second click on an unchanged top 3 says it reused the
+   review. If the first call fails, the page shows the reason in plain English.
+2. Run `/security-review` on the unpushed commit, then push.
+3. Optional: deck Option A (parse a messy list), reusing `server/` and the
+   `challenge.ts` validation pattern.
+4. Optional: `gh secret set CLAUDE_API_KEY --repo JamesKevinJones/decidra` for the
+   PR security workflow.
 
 ## Open questions
 
-- Whether to build the deck Part 4 AI extension at all. That's Kevin's call. The
-  app is complete and useful without it.
+- Whether to build Option A as well. That's Kevin's call.
 
 ## Known traps
 
@@ -57,6 +56,11 @@ Nothing is required. Options, in order of value:
   clicks fail and `<dialog>` `close` events never fire. Drive checks with DOM
   events and measurements, or bring the pane into view. Escape is handled
   through `cancel`, which fires synchronously, so this doesn't affect real users.
+- Never call the live API from tests or CI. `server/challenge-handler.ts` takes the
+  Claude caller as a parameter precisely so tests can pass a fake.
+- `vite.config.ts` reads `.env.local` with `loadEnv(mode, cwd, '')`. Only
+  `VITE_`-prefixed variables reach the browser; never rename the key to
+  `VITE_ANTHROPIC_API_KEY`.
 - Tests use `node --test` on `.ts` files directly, which needs Node 22.18 or
   newer. Test imports need the `.ts` extension, and tested code can't use DOM
   APIs or TS-only syntax such as enums.
