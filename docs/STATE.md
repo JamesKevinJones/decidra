@@ -24,9 +24,12 @@ https://github.com/JamesKevinJones/decidra (public) on 2026-10-07.
 ## The exact next step
 
 1. Optional: `gh secret set CLAUDE_API_KEY --repo JamesKevinJones/decidra` so the
-   security-review workflow can run on PRs (Kevin sets this himself). Its
-   `claude-model: claude-opus-5` comes from the framework template and is
-   probably not a valid model ID. Fix it in `_agent-framework` first.
+   security-review workflow can run on PRs (Kevin sets this himself). The
+   workflow pins `claude-opus-5-5`, synced from the framework template on
+   2026-10-07. (An earlier note here called `claude-opus-5` invalid; that was
+   wrong, it's a real model, just one generation older.) Known upstream issue:
+   the action's API check pings the retired `claude-3-5-haiku-20241022`, so its
+   false-positive filter switches itself off and PR comments will be noisier.
 2. Optional: deck Part 4 AI extension. Option A is parsing a messy list into
    suggested estimates; Option B is "Challenge my top 3". Either needs a mock
    adapter first and a server-side key; never put a key in the browser.
